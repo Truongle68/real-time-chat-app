@@ -1,50 +1,19 @@
 import {Messages} from '../constants/manageMessage.js'
-import { generateToken } from '../lib/utils.js';
-import User from '../models/user.model.js'
-import bcrypt from 'bcryptjs'
+import authService from '../services/auth.services.js';
 
 export const signUpController = async (req, res) => {
-    const { email, fullName, password } = req.body;
     try {
-        if(!email || !fullName || !password){
-            return res.status(400).json({message: Messages.MISSING_FIELDS});
-        }
-
-        if(password.length < 6){
-            return res.status(400).json({message: Messages.INVALID_PASSWORD_LENGTH});
-        }
-
-        const user = await User.findOne({email})
-
-        if(user){
-            return res.status(400).json({message: Messages.USER_EXISTED});
-        }
-
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        const newUser = new User({
-            email,
-            fullName,
-            password: hashedPassword
-        })
-        console.log("User: ", newUser)
-        if(newUser){
-            //generate token
-            generateToken(newUser._id, res);
-            await newUser.save();
-
+        const result = await authService.signUp(req.body, res)
+        if (result.error) {
+            return res.status(400).json({
+                message: Messages.REGISTERED_FAIL,
+                error: result.error
+            })
+        }else {
             return res.status(201).json({
-                    message: Messages.REGISTERED_SUCCESS,
-                    data: {
-                        _id: newUser._id,
-                        email: newUser.email,
-                        fullName: newUser.fullName,
-                        profilePic: newUser.profilePic  
-                    }
-                })
-        }else{
-            return res.status(400).json({message: Messages.INVALID_DATA})
+                message: Messages.REGISTERED_SUCCESS,
+                data: result
+            })
         }
     } catch (error) {
         console.log("Error in signup controller: ", error.message)
@@ -52,10 +21,32 @@ export const signUpController = async (req, res) => {
     }
 }
 
-export const loginController = (req, res) => {
-    res.send('Login');
+export const loginController = async(req, res) => {
+    try {
+        const result = await authService.login(req.body, res)
+        if (result.error) {
+            return res.status(400).json({
+                message: Messages.LOGIN_FAIL,
+                error: result.error
+            })
+        }else {
+            return res.status(201).json({
+                message: Messages.LOGIN_SUCCESS,
+                data: result
+            })
+        }
+    } catch (error) {
+        console.log("Error in login controller: ", error.message)
+        return res.status(500).json({message: Messages.INTERNAL_SERVER_ERROR})
+    }
 }
 
 export const logoutController = (req, res) => {
-    res.send('Logout');
+    try {
+        res.clearCookie("jwt")
+        return res.status(200).json({message: Messages.USER_LOGGED_OUT})
+    } catch (error) {
+        console.log("Error in logout controller: ", error.message)
+        return res.status(500).json({message: Messages.INTERNAL_SERVER_ERROR})
+    }
 }

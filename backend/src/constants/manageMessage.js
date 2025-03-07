@@ -5,7 +5,9 @@ export const Messages = {
     INTERNAL_SERVER_ERROR: "Internal server error",
     //User
     REGISTERED_SUCCESS: "User registered successfully",
-    REGISTERED_FAIL: "Fail to register user account",
+    REGISTERED_FAIL: "User registered failed",
+    LOGIN_SUCCESS: "User logged in successfully",
+    LOGIN_FAIL: "User logged in failed",
     USER_LOGGED_IN: "User logged in successfully",
     USER_LOGGED_OUT: "User logged out successfully",
     USER_UPDATED: "Update user successfully",

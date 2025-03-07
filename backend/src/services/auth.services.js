@@ -2,6 +2,8 @@ import bcrypt from "bcryptjs";
 import User from "../models/user.model.js";
 import { Messages } from "../constants/manageMessage.js";
 import { generateToken } from "../lib/utils.js";
+import jwt from "jsonwebtoken";
+import cloudinary from "../lib/cloudinary.js";
 
 class AuthService {
   async signUp(payload, res) {
@@ -69,6 +71,60 @@ class AuthService {
     }
   }
 
+  async authenticate(token){
+    if(!token){
+        return {error: Messages.TOKEN_NOT_FOUND}
+    }
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+
+    if(!decoded){
+        return {error: Messages.INVALID_TOKEN}
+    }
+
+    const user = await User.findById(decoded.userId).select('-password')
+
+    if(!user){
+        return {error: Messages.USER_NOT_FOUND}
+    }
+
+    return user;
+  }
+
+  async updateProfile(payload, user){
+    if(!user){
+        return {error: Messages.USER_NOT_FOUND}
+    }
+
+    if(payload.email === "" || payload.fullName === ""){
+        return {error: Messages.NOT_BLANK}
+    }
+
+    if(!payload.profilePic){
+        return {error: Messages.MISSING_FIELDS}
+    }
+
+    const uploadResponse= await cloudinary.uploader.upload(payload.profilePic)
+
+    const updatedUser = await User.findByIdAndUpdate(
+        user._id, {
+            $set:{
+                ...payload,
+                profilePic: uploadResponse.secure_url
+            }
+        }, {new: true}
+    ).select('-password')
+    
+    return updatedUser
+  } 
+
+//   validateInput(payload){
+//     Object.keys(payload).forEach((key) => {
+//         if (payload[key] === null || payload[key] === undefined) {
+//             errorField.push(key);
+//         }
+//     });
+//   }
 }
 
 const authService = new AuthService();

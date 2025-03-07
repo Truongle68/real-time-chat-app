@@ -50,3 +50,25 @@ export const logoutController = (req, res) => {
         return res.status(500).json({message: Messages.INTERNAL_SERVER_ERROR})
     }
 }
+
+export const updateProfileController = async(req, res) => {
+    try {
+        const result = await authService.updateProfile(req.body, req.user)
+        if (result.error) {
+            return res.status(400).json({
+                message: Messages.PROFILE_UPDATED_FAIL,
+                error: result.error
+            })
+        }else {
+            return res.status(201).json({
+                message: Messages.PROFILE_UPDATED_SUCCESS,
+                data: result
+            })
+        }
+    } catch (error) {
+        console.log("Error in login controller: ", error.message)
+        return res.status(500).json({message: Messages.INTERNAL_SERVER_ERROR})
+    }
+}
+
+

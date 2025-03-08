@@ -51,6 +51,15 @@ export const logoutController = (req, res) => {
     }
 }
 
+export const checkAuthController = (req, res) => {
+    try {
+        return res.status(200).json(req.user);
+    } catch (error) {
+        console.log("Error in check Auth controller: ", error.message)
+        return res.status(500).json({message: Messages.INTERNAL_SERVER_ERROR})
+    }
+}
+
 export const updateProfileController = async(req, res) => {
     try {
         const result = await authService.updateProfile(req.body, req.user)

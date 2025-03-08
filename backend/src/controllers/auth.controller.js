@@ -62,14 +62,14 @@ export const checkAuthController = (req, res) => {
 
 export const updateProfileController = async(req, res) => {
     try {
-        const result = await authService.updateProfile(req.body, req.user)
+        const result = await authService.updateProfilePic(req.body, req.user)
         if (result.error) {
             return res.status(400).json({
                 message: Messages.PROFILE_UPDATED_FAIL,
                 error: result.error
             })
         }else {
-            return res.status(201).json({
+            return res.status(200).json({
                 message: Messages.PROFILE_UPDATED_SUCCESS,
                 data: result
             })

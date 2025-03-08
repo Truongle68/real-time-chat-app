@@ -91,29 +91,31 @@ class AuthService {
     return user;
   }
 
-  async updateProfile(payload, user){
-    if(!user){
-        return {error: Messages.USER_NOT_FOUND}
-    }
-
-    if(payload.email === "" || payload.fullName === ""){
-        return {error: Messages.NOT_BLANK}
-    }
+  async updateProfilePic(payload, user){
 
     if(!payload.profilePic){
         return {error: Messages.MISSING_FIELDS}
     }
 
     const uploadResponse= await cloudinary.uploader.upload(payload.profilePic)
+    const url = cloudinary.url(uploadResponse.public_id, {
+      transformation:[
+        {
+          quality: 'auto',
+          fetch_format: 'auto',
+        },
+        {
+          width: '1200',
+          height: '1200',
+          crop: 'auto',
+          gravity: 'auto'
+        }
+      ]
+    })
 
     const updatedUser = await User.findByIdAndUpdate(
-        user._id, {
-            $set:{
-                ...payload,
-                profilePic: uploadResponse.secure_url
-            }
-        }, {new: true}
-    ).select('-password')
+        user._id, {profilePic: url}, {new: true}
+    ).select("-password")
     
     return updatedUser
   } 

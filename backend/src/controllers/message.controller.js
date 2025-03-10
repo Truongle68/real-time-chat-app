@@ -24,15 +24,15 @@ export const getUsersForSidebarController = async (req, res) => {
 
 export const sendMessageController = async (req, res) => {
     try {
-        const result = await messageService.sendMessage(req.body, req.user)
+        const result = await messageService.sendMessage(req.body ,req.params, req.user)
         if (result.error) {
             return res.status(400).json({
-                message: Messages.PROFILE_UPDATED_FAIL,
+                message: Messages.SEND_MESSAGE_FAIL,
                 error: result.error
             })
         }else {
             return res.status(201).json({
-                message: Messages.PROFILE_UPDATED_SUCCESS,
+                message: Messages.SEND_MESSAGE_SUCCESS,
                 data: result
             })
         }
@@ -44,15 +44,15 @@ export const sendMessageController = async (req, res) => {
 
 export const getMessagesController = async (req, res) => {
 try {
-        const result = await messageService.getMessages(req.user)
+        const result = await messageService.getMessages(req.params ,req.user)
         if (result.error) {
             return res.status(400).json({
-                message: Messages.PROFILE_UPDATED_FAIL,
+                message: Messages.FETCH_MESSAGES_FAIL,
                 error: result.error
             })
         }else {
             return res.status(201).json({
-                message: Messages.PROFILE_UPDATED_SUCCESS,
+                message: Messages.FETCH_MESSAGES_SUCCESS,
                 data: result
             })
         }

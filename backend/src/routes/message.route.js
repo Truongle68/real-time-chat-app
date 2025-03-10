@@ -8,6 +8,6 @@ export default router;
 
 router.get('/users', authenticated, getUsersForSidebarController)
 
-router.post('/send', sendMessageController)
+router.post('/send/:id', authenticated, sendMessageController)
 
-router.get('/get', getMessagesController)
+router.get('/get/:id',authenticated, getMessagesController)

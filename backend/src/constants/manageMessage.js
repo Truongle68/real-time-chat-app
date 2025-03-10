@@ -28,4 +28,9 @@ export const Messages = {
     INVALID_PASSWORD_LENGTH: "Password must be at least 6 characters",
     INVALID_EMAIL: "Email is invalid",
     EMAIL_EXISTD: "Email already existed",
+    //messages
+    FETCH_MESSAGES_SUCCESS: "Fetch messages successfully",
+    FETCH_MESSAGES_FAIL: "Fail to fetch messages",
+    SEND_MESSAGE_SUCCESS: "Send message successfully",
+    SEND_MESSAGE_FAIL: "Fail to send message",
 }

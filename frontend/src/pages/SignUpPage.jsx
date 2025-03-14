@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare, User } from "lucide-react";
 import {Link} from 'react-router-dom'
 import AuthImagePattern from "../components/AuthImagePattern";
+import toast from "react-hot-toast";
 
 const SignUpPage = () => {
-  const { isSigningUp } = useAuthStore();
+  const { signUp, isSigningUp } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({
     fullName: "",
@@ -13,7 +14,23 @@ const SignUpPage = () => {
     password: "",
   });
 
-  const handleSubmit = async () => {};
+  const validateForm = () => {
+    if(!formData.fullName) return toast.error("Full name is required!")
+    if(!formData.email) return toast.error("Email is required!")
+    if(!/\S+@\S+\.\S+/.test(formData.email)) return toast.error("Invalid email format!")
+    if(!formData.password) return toast.error("Password is required!")
+    if(formData.password.length < 6) return toast.error("Password must be at least 6 characters!")
+
+    return true
+  }
+
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+
+    const validated = validateForm();
+
+    if(validated === true) signUp(formData);
+  };
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2 ">
@@ -51,9 +68,9 @@ const SignUpPage = () => {
                   type="text"
                   placeholder="John Doe"
                   className={`input input-bordered w-full pl-10`}
-                  value={formData.email}
+                  value={formData.fullName}
                   onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
+                    setFormData({ ...formData, fullName: e.target.value })
                   }
                 />
               </div>
@@ -71,9 +88,9 @@ const SignUpPage = () => {
                   type="text"
                   placeholder="johndoe11@gmail.com"
                   className={`input input-bordered w-full pl-10`}
-                  value={formData.fullName}
+                  value={formData.email}
                   onChange={(e) =>
-                    setFormData({ ...formData, fullName: e.target.value })
+                    setFormData({ ...formData, email: e.target.value })
                   }
                 />
               </div>
@@ -108,7 +125,7 @@ const SignUpPage = () => {
               </div>
             </div>
 
-            <button type="button" className="btn btn-primary w-full" disabled={isSigningUp}>
+            <button type="submit" className="btn btn-primary w-full" disabled={isSigningUp}>
                 {isSigningUp ? 
                <>
                 <Loader2 className="size-5 animate-spin"/>

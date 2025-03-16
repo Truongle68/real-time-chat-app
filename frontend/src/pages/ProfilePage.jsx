@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import {Camera} from 'lucide-react'
+import {Camera, Mail, User} from 'lucide-react'
 import {useAuthStore} from '../store/useAuthStore'
 
 const ProfilePage = () => {
@@ -24,7 +24,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className='h-screen pt-20'>
+    <div className='min-h-screen pt-20 text-base-content/50'>
       <div className="max-w-2xl mx-auto p-4 py-8">
         <div className="bg-base-300 rounded-xl p-6 space-y-8">
           <div className="text-center">
@@ -35,7 +35,7 @@ const ProfilePage = () => {
           <div className="flex flex-col items-center gap-4">
             <div className="relative">
               <img 
-                src={selectedImage || authUser.profilePic || "/avatar.png"} 
+                src={selectedImage || authUser?.profilePic || "/avatar.png"} 
                 alt="Profile" 
                 className='size-32 rounded-full object-cover border-4'
               />
@@ -63,6 +63,38 @@ const ProfilePage = () => {
             <p className='text-sm text-zinc-400'>
               {isUpdatingProfile ? 'Uploading...' : 'Click the camera icon to upload your photo'}
             </p>
+          </div>
+
+          <div className="space-y-6">
+            <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <User className='size-4'/>
+                  Full Name
+                </div>
+                <p className='px-4 py-2.5 bg-base-200 border rounded-lg'>{authUser?.fullName}</p>
+            </div>
+
+            <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <Mail className='size-4'/>
+                  Email Address
+                </div>
+                <p className='px-4 py-2.5 border rounded-lg bg-base-200'>{authUser?.email}</p>
+            </div>
+          </div>
+
+          <div className="mt-6 p-6 rounded-xl bg-base-300">
+            <h2 className='font-medium text-lg mb-4'>Account Information</h2>
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between items-center py-2 border-b border-zinc-700">
+                    <span>Member Since</span>
+                    <span>2024-12-12</span>
+              </div>
+              <div className="flex justify-between items-center py-3">
+                    <span>Account status</span>
+                    <span className='text-success/70'>Active</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

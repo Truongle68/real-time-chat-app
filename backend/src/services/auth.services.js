@@ -92,6 +92,7 @@ class AuthService {
   }
 
   async updateProfilePic(payload, user){
+    console.log("payload: ", payload)
 
     if(!payload.profilePic){
         return {error: Messages.MISSING_FIELDS}

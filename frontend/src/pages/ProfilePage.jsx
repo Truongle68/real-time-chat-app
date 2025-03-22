@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Camera, Mail, User } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import imageCompression from "browser-image-compression";
@@ -50,6 +50,17 @@ const ProfilePage = () => {
 
   };
 
+  const prefetchImage = (url) => {
+    const img = new Image();
+    img.src = url;
+  };
+  
+  useEffect(() => {
+    //This will download the image in the background and store it in the browser cache.
+    prefetchImage(authUser?.profilePic);
+  });
+  
+
   return (
     <div className="min-h-screen pt-20 text-base-content/50">
       <div className="max-w-2xl mx-auto p-4 py-8">
@@ -65,6 +76,7 @@ const ProfilePage = () => {
                 src={selectedImage || authUser?.profilePic || "/avatar.png"}
                 alt="Profile"
                 className="size-32 rounded-full object-cover border-4"
+                rel="preload"
               />
               <label
                 htmlFor="avatar-upload"

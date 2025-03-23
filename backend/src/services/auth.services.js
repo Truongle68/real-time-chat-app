@@ -34,100 +34,101 @@ class AuthService {
       await newUser.save();
 
       return {
-          _id: newUser._id,
-          email: newUser.email,
-          fullName: newUser.fullName,
-          profilePic: newUser.profilePic,
-        }
+        _id: newUser._id,
+        email: newUser.email,
+        fullName: newUser.fullName,
+        profilePic: newUser.profilePic,
+      };
     } else {
       return { error: Messages.INVALID_DATA };
     }
   }
 
-  async login(payload, res){
-
-    if(!payload.email || !payload.password){
-        return {error: Messages.MISSING_FIELDS}
+  async login(payload, res) {
+    if (!payload.email || !payload.password) {
+      return { error: Messages.MISSING_FIELDS };
     }
 
-    const user = await User.findOne({email: payload.email})
+    const user = await User.findOne({ email: payload.email });
 
-    if(!user){
-        return {error: Messages.USER_NOT_FOUND}
+    if (!user) {
+      return { error: Messages.USER_NOT_FOUND };
     }
 
-    const isMatch = await bcrypt.compare(payload.password, user.password)
+    const isMatch = await bcrypt.compare(payload.password, user.password);
 
-    if(!isMatch){
-        return {error: Messages.INCORRECT_PASSWORD}
+    if (!isMatch) {
+      return { error: Messages.INCORRECT_PASSWORD };
     }
-    generateToken(user._id, res)
-    
-    return{
-        _id: user._id,
-        email: user.email,
-        fullName: user.fullName,
-        profilePic: user.profilePic
-    }
+    generateToken(user._id, res);
+
+    return {
+      _id: user._id,
+      email: user.email,
+      fullName: user.fullName,
+      profilePic: user.profilePic,
+    };
   }
 
-  async authenticate(token){
-    if(!token){
-        return {error: Messages.TOKEN_NOT_FOUND}
-    }
-    
-    const decoded = jwt.verify(token, process.env.JWT_SECRET)
-
-    if(!decoded){
-        return {error: Messages.INVALID_TOKEN}
+  async authenticate(token) {
+    if (!token) {
+      return { error: Messages.TOKEN_NOT_FOUND };
     }
 
-    const user = await User.findById(decoded.userId).select('-password')
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    if(!user){
-        return {error: Messages.USER_NOT_FOUND}
+    if (!decoded) {
+      return { error: Messages.INVALID_TOKEN };
+    }
+
+    const user = await User.findById(decoded.userId).select("-password");
+
+    if (!user) {
+      return { error: Messages.USER_NOT_FOUND };
     }
 
     return user;
   }
 
-  async updateProfilePic(payload, user){
-    console.log("payload: ", payload)
+  async updateProfilePic(payload, user) {
+    console.log("payload: ", payload);
 
-    if(!payload.profilePic){
-        return {error: Messages.MISSING_FIELDS}
+    if (!payload.profilePic) {
+      return { error: Messages.MISSING_FIELDS };
     }
 
-    const uploadResponse= await cloudinary.uploader.upload(payload.profilePic)
+    const uploadResponse = await cloudinary.uploader.upload(payload.profilePic);
     const url = cloudinary.url(uploadResponse.public_id, {
-      transformation:[
+      transformation: [
         {
-          quality: 'auto',
-          fetch_format: 'auto',
+          quality: "auto",
+          fetch_format: "auto",
         },
         {
-          width: '1200',
-          height: '1200',
-          crop: 'auto',
-          gravity: 'auto'
-        }
-      ]
-    })
+          width: "1200",
+          height: "1200",
+          crop: "auto",
+          gravity: "auto",
+        },
+      ],
+    });
 
     const updatedUser = await User.findByIdAndUpdate(
-        user._id, {profilePic: url}, {new: true}
-    ).select("-password")
-    
-    return updatedUser
-  } 
+      user._id,
+      { profilePic: url },
+      { new: true }
+    ).select("-password");
 
-//   validateInput(payload){
-//     Object.keys(payload).forEach((key) => {
-//         if (payload[key] === null || payload[key] === undefined) {
-//             errorField.push(key);
-//         }
-//     });
-//   }
+    return updatedUser;
+  }
+
+  //   validateInput(payload){
+  //     Object.keys(payload).forEach((key) => {
+  //         if (payload[key] === null || payload[key] === undefined) {
+  //             errorField.push(key);
+  //         }
+  //     });
+  //   }
 }
 
 const authService = new AuthService();

@@ -1,35 +1,53 @@
-import { Image, Send, X } from "lucide-react";
+import { Image, Loader, Loader2, Send, X } from "lucide-react";
 import React, { useRef, useState } from "react";
-import {toast} from "react-hot-toast"
+import { toast } from "react-hot-toast";
+import { useChatStore } from "../store/useChatStore";
 
 const ChatInput = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [text, setText] = useState("");
+  const { sendMessage, isSentMessagesLoading } = useChatStore();
 
   //useRef: lưu tham chiếu đến phần tử DOM && k gây re-render
   const fileInputRef = useRef(null);
 
-  const handleSendMessage = (e) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
+
+    if (!text.trim() || !imagePreview) return;
+
+    const messageData = {
+      text: text.trim(),
+      image: imagePreview,
+    };
+
+    try {
+      await sendMessage(messageData);
+      setText("");
+      setImagePreview(null);
+      if (fileInputRef.current) fileInputRef.current.value == "";
+    } catch (error) {
+      console.log("Fail to send message: ", error);
+    }
   };
 
   const removeImage = () => {
-    setImagePreview(null)
-    if(fileInputRef.current) fileInputRef.current.value = ""
+    setImagePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0]
-    if(!file.type.startsWith("image/")) {
-      toast.error("Please select an image file")
-      return
+    const file = e.target.files[0];
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
     }
 
-    const reader = new FileReader()
+    const reader = new FileReader();
     reader.onloadend = () => {
-      setImagePreview(reader.result)
-    }
-    reader.readAsDataURL(file)
+      setImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -83,8 +101,8 @@ const ChatInput = () => {
           type="submit"
           className="btn btn-circle"
           disabled={!text.trim() && !imagePreview}
-        >
-          <Send size={22} />
+        > 
+          {isSentMessagesLoading ? <Loader2 className="animate-spin" size={22}/> :  <Send size={22}/>} 
         </button>
       </form>
     </div>

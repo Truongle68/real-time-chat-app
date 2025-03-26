@@ -3,6 +3,7 @@ import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
 import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
+
 import { formatMessageDate } from "../lib/utils";
 import classNames from "classnames";
 
@@ -55,38 +56,38 @@ const ChatContainer = () => {
                   {formatMessageDate(message.createdAt)}
                 </time>
               </div>
-              <div className="flex flex-col max-w-[80%] w-full">
-                {message.image && (
-                  <div
-                    className={classNames({
-                      "justify-end": message.senderId === authUser._id,
-                      "justify-start": message.senderId !== authUser._id,
+                <div className="flex flex-col max-w-[80%] w-full">
+                  {message.image && (
+                    <div
+                      className={classNames({
+                        "justify-end": message.senderId === authUser._id,
+                        "justify-start": message.senderId !== authUser._id,
+                        "flex": true,
+                      })}
+                    >
+                      <img
+                        src={message.image}
+                        alt="message image"
+                        className="sm:max-w-[200px] mb-2 rounded-md flex"
+                      />
+                    </div>
+                  )}
+                  {message.text && (
+                    <div className={classNames({
+                      "justify-end ": message.senderId === authUser._id,
+                      "justify-start ": message.senderId !== authUser._id,
                       "flex": true,
-                    })}
-                  >
-                    <img
-                      src={message.image}
-                      alt="message image"
-                      className="sm:max-w-[200px] mb-2 rounded-md flex"
-                    />
-                  </div>
-                )}
-                {message.text && (
-                  <div className={classNames({
-                    "justify-end ": message.senderId === authUser._id,
-                    "justify-start ": message.senderId !== authUser._id,
-                    "flex": true,
-                  })}>
-                    <p className={classNames({
-                      "bg-primary text-primary-content/70 rounded-r-2xl": message.senderId === authUser._id,
-                      "bg-base-200 text-base-content/70 rounded-l-2xl": message.senderId !== authUser._id,
-                      "rounded-3xl py-1 px-2.5":true
                     })}>
-                      {message.text}
-                    </p>
-                  </div>
-                )}
-              </div>
+                      <p className={classNames({
+                        "bg-primary text-primary-content/70 rounded-r-2xl": message.senderId === authUser._id,
+                        "bg-base-200 text-base-content/70 rounded-l-2xl": message.senderId !== authUser._id,
+                        "rounded-3xl py-1 px-2.5":true
+                      })}>
+                        {message.text}
+                      </p>
+                    </div>
+                  )}
+                </div>
             </div>
           ))}
       </div>

@@ -12,9 +12,6 @@ class MessageService {
     }
 
     async sendMessage(payload, params, user) {
-        // if(payload.text.trim === ""){
-        //     return
-        // }
         const {id: receiverId} = params
         const senderId = user._id
 

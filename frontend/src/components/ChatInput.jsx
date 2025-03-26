@@ -14,10 +14,8 @@ const ChatInput = () => {
   const handleSendMessage = async (e) => {
     e.preventDefault();
 
-    if (!text.trim() || !imagePreview) return;
-
     const messageData = {
-      text: text.trim(),
+      text: text?.trim(),
       image: imagePreview,
     };
 

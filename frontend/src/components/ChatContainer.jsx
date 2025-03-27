@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
 import ChatHeader from "./ChatHeader";
@@ -9,31 +9,47 @@ import classNames from "classnames";
 import MessageTooltip from "./tooltips/MessageTooltip";
 
 const ChatContainer = () => {
-  const { messages, getMessages, selectedUser } = useChatStore();
+  const { messages, getMessages, selectedUser, subscribeToMessage, unsubscribeToMessage } = useChatStore();
   const { authUser } = useAuthStore();
+  const messageEndRef = useRef(null)
 
   const [hoveredElement, setHoveredElement] = useState({
     id: null,
     type: "",
   });
 
+  const scrollToBottom = () => {
+    messageEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+      inline: "nearest"
+    })
+  }
+
+  useEffect(()=>{
+    scrollToBottom()
+  },[messages, selectedUser._id])
+  
   useEffect(() => {
-    (async () => {
-      await getMessages(selectedUser._id);
-    })();
-  }, [getMessages, selectedUser._id]);
+    getMessages(selectedUser._id);
+
+    subscribeToMessage()
+
+    return () => unsubscribeToMessage()
+  }, [getMessages, selectedUser._id, subscribeToMessage, unsubscribeToMessage]);
+
 
   return (
-    <div className="flex-1 flex-col flex min-h-0">
+    <div  className="flex-1 flex-col flex min-h-0">
       {/* Chat Header */}
       <ChatHeader className="flex-none"/>
       {/* Chat Body */}
       <div className="flex-1 p-4 space-y-4 overflow-y-auto min-h-0">
         {messages.length > 0 &&
           messages.map((message) => (
-            <div className="">
+            <div ref={messageEndRef} className="">
               <div className="flex justify-center items-center py-4 text-xs text-base-content/80">
-                <time datetime="">{formatMessageDate(message.createdAt)}</time>
+                <time>{formatMessageDate(message.createdAt)}</time>
               </div>
               <div
                 key={message._id}
@@ -53,11 +69,6 @@ const ChatContainer = () => {
                     />
                   </div>
                 </div>
-                {/* <div className="chat-header mb-1">
-                  <time className="text-xs opacity-50 ml-1">
-                    {formatMessageDate(message.createdAt)}
-                  </time>
-                </div> */}
                 <div className="flex flex-col w-full">
                   {message.image && (
                     <div
@@ -81,7 +92,11 @@ const ChatContainer = () => {
                         />
                         {hoveredElement.id === message._id &&
                           hoveredElement.type === "image" && (
-                            <div className="absolute right-full top-1/2 z-50">
+                            <div className={classNames({
+                              "right-full": message.senderId === authUser._id,
+                              "left-full": message.senderId != authUser._id,
+                              "absolute top-1/2 z-50":true
+                            })}>
                               <MessageTooltip content={message.createdAt}/>
                             </div>
                           )}
@@ -116,7 +131,11 @@ const ChatContainer = () => {
                         </p>
                         {hoveredElement.id === message._id &&
                           hoveredElement.type === "text" && (
-                            <div className="absolute right-full top-1/2 transform -translate-y-1/2 z-[9999]">
+                            <div className={classNames({
+                              "right-full": message.senderId === authUser._id,
+                              "left-full": message.senderId != authUser._id,
+                              "absolute top-1/2 transform -translate-y-1/2 z-50":true
+                            })}>
                               <MessageTooltip content={message.createdAt}/>
                             </div>
                           )}

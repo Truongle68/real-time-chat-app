@@ -1,5 +1,6 @@
 import { Messages } from "../constants/manageMessage.js";
 import cloudinary from "../lib/cloudinary.js";
+import { getReceiverSocketId, io } from "../lib/socket.js";
 import Message from "../models/message.model.js";
 import User from "../models/user.model.js";
 
@@ -27,18 +28,21 @@ class MessageService {
             text: payload.text,
             image: imageUrl
         })
-
+        
+        await message.save();
         //real-time sending message (socket.io)
-
-        if(message){
-            return await message.save();
+        const receiverSocketId = getReceiverSocketId(receiverId)
+        console.log("receiver socket id: ", receiverSocketId)
+        if(receiverSocketId){
+            //send message to socketId: receiverSocketId
+            io.to(receiverSocketId).emit("newMessage", message)
         }
+        return message
     }
 
     async getMessages(param, user){
         const {id} = param
         const receiver = await User.findById(id)
-        console.log(receiver)
         if(!receiver){
             return {error: Messages.USER_NOT_FOUND}
         }

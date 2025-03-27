@@ -91,8 +91,6 @@ class AuthService {
   }
 
   async updateProfilePic(payload, user) {
-    console.log("payload: ", payload);
-
     if (!payload.profilePic) {
       return { error: Messages.MISSING_FIELDS };
     }
@@ -121,14 +119,6 @@ class AuthService {
 
     return updatedUser;
   }
-
-  //   validateInput(payload){
-  //     Object.keys(payload).forEach((key) => {
-  //         if (payload[key] === null || payload[key] === undefined) {
-  //             errorField.push(key);
-  //         }
-  //     });
-  //   }
 }
 
 const authService = new AuthService();

@@ -3,14 +3,21 @@ import { useChatStore } from "../store/useChatStore";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
 import { Users } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
+import classNames from "classnames";
 
 const Sidebar = () => {
-  const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading } = useChatStore();
-  const {onlineUsers} = useAuthStore()
+  const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading } =
+    useChatStore();
+  const { onlineUsers, socket } = useAuthStore();
 
   useEffect(() => {
     getUsers();
   }, [getUsers]);
+
+  const handleSelectedUser = (user) => {
+    setSelectedUser(user);
+    socket.emit("join", user._id);
+  };
 
   if (isUsersLoading) return <SidebarSkeleton />;
 
@@ -28,16 +35,11 @@ const Sidebar = () => {
         {users.map((user) => (
           <button
             key={user._id}
-            onClick={() => setSelectedUser(user)}
-            className={`
-                w-full p-3 flex items-center gap-3
-                hover:bg-base-300 transition-colors
-                ${
-                  selectedUser?._id === user._id
-                    ? "bg-base-300 ring-1 ring-base-300"
-                    : ""
-                }
-              `}
+            onClick={() => handleSelectedUser(user)}
+            className={classNames({
+              "bg-base-300 ring-1 ring-base-300": selectedUser?._id === user._id,
+              "w-full p-3 flex items-center gap-3 hover:bg-base-300 transition-colors": true,
+            })}
           >
             <div className="relative mx-auto lg:mx-0">
               <img
@@ -47,8 +49,11 @@ const Sidebar = () => {
               />
               {onlineUsers.includes(user._id) && (
                 <span
-                  className="absolute bottom-0 right-0 size-3 bg-green-500
-                  rounded-full ring-2 ring-zinc-900"
+                  className={classNames({
+                    "ring-base-300": user._id === selectedUser?._id,
+                    "ring-base-100": user._id !== selectedUser?._id,
+                    "absolute bottom-0 right-0 size-3 bg-green-500 rounded-full ring-2 ": true,
+                  })}
                   // ring: tạo viền ngoài (outline) xung quanh phần tử, có hiệu ứng mờ (blur) và bóng (shadow-like).
                 />
               )}

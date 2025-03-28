@@ -32,7 +32,6 @@ class MessageService {
         await message.save();
         //real-time sending message (socket.io)
         const receiverSocketId = getReceiverSocketId(receiverId)
-        console.log("receiver socket id: ", receiverSocketId)
         if(receiverSocketId){
             //send message to socketId: receiverSocketId
             io.to(receiverSocketId).emit("newMessage", message)

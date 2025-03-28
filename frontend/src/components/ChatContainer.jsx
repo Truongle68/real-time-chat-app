@@ -18,17 +18,13 @@ const ChatContainer = () => {
     type: "",
   });
 
-  const scrollToBottom = () => {
-    messageEndRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-      inline: "nearest"
-    })
-  }
-
   useEffect(()=>{
-    scrollToBottom()
-  },[messages, selectedUser._id])
+    if(messageEndRef.current && messages){
+      messageEndRef.current?.scrollIntoView({
+        behavior: "smooth",
+      })
+    }
+  },[messages])
   
   useEffect(() => {
     getMessages(selectedUser._id);
@@ -47,7 +43,7 @@ const ChatContainer = () => {
       <div className="flex-1 p-4 space-y-4 overflow-y-auto min-h-0">
         {messages.length > 0 &&
           messages.map((message) => (
-            <div ref={messageEndRef} className="">
+            <div ref={messageEndRef}>
               <div className="flex justify-center items-center py-4 text-xs text-base-content/80">
                 <time>{formatMessageDate(message.createdAt)}</time>
               </div>

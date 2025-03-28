@@ -62,6 +62,11 @@ export const useChatStore = create((set, get) => ({
 
     const socket = useAuthStore.getState().socket
     socket.on("newMessage", (newMessage) => {
+
+      const isMessageSentBySelectedUser = newMessage.senderId === selectedUser._id
+      // Only update messages real-time if your selected user is the sender of that message
+      // Prevent showing message to another one
+      if(!isMessageSentBySelectedUser) return
       set({
         messages: [...get().messages, newMessage]
       })

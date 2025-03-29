@@ -33,7 +33,7 @@ export const useChatStore = create((set, get) => ({
     } catch (error) {
       console.log("error: ", error);
       toast.error(error.response.data.message);
-    } 
+    }
   },
 
   getMessages: async (userId) => {
@@ -68,25 +68,25 @@ export const useChatStore = create((set, get) => ({
   },
 
   subscribeToMessage: () => {
-    const {selectedUser} = get()
-    if(!selectedUser) return
+    const { selectedUser } = get();
+    if (!selectedUser) return;
 
-    const socket = useAuthStore.getState().socket
+    const socket = useAuthStore.getState().socket;
     socket.on("newMessage", (newMessage) => {
-
-      const isMessageSentBySelectedUser = newMessage.senderId === selectedUser._id
+      const isMessageSentBySelectedUser =
+        newMessage.senderId === selectedUser._id;
       // Only update messages real-time if your selected user is the sender of that message
       // Prevent showing message to another one
-      if(!isMessageSentBySelectedUser) return
+      if (!isMessageSentBySelectedUser) return;
       set({
-        messages: [...get().messages, newMessage]
-      })
-    })
+        messages: [...get().messages, newMessage],
+      });
+    });
   },
 
   unsubscribeToMessage: () => {
-    const socket = useAuthStore.getState().socket
-    socket.off("newMessage")
+    const socket = useAuthStore.getState().socket;
+    socket.off("newMessage");
   },
 
   setSelectedUser: (selectedUser) => {

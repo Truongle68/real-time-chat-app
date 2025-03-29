@@ -2,12 +2,13 @@
 
 export const Messages = {
     //Common
-    REQUIRED_FIELDS: `is required`,
+    REQUIRED_FIELDS: `%s is required`,
     MISSING_FIELDS: "Missing required fields",
     INVALID_DATA: "Invalid input data",
     INTERNAL_SERVER_ERROR: "Internal server error",
     NOT_BLANK: "Require fields must not be blank",
     GET_LIST_SUCCESS: "Get %s list successfully",
+    GET_LIST_FAIL: "Get %s list fail",
     //Auth
     TOKEN_NOT_FOUND: "Unauthorized - No token provided",
     INVALID_TOKEN: "Unauthorized - Invalid token",

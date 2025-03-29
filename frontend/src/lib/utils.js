@@ -38,3 +38,12 @@ function isThisWeek(date) {
   startOfWeek.setHours(0,0,0,0)
   return date >= startOfWeek && date <= today;
 }
+
+function exceedTime(oldDate, newDate, minute){
+  const msInMinutes = 60 * 1000
+  return (new Date(newDate) - new Date(oldDate) > (minute * msInMinutes))
+}
+
+export function exceedTenMinute(oldDate, newDate){
+  return exceedTime(oldDate, newDate, 10)
+}

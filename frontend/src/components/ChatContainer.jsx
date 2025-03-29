@@ -4,49 +4,61 @@ import { useAuthStore } from "../store/useAuthStore";
 import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
 
-import { formatMessageDate } from "../lib/utils";
+import { exceedTenMinute, formatMessageDate } from "../lib/utils";
 import classNames from "classnames";
 import MessageTooltip from "./tooltips/MessageTooltip";
 
 const ChatContainer = () => {
-  const { messages, getMessages, selectedUser, subscribeToMessage, unsubscribeToMessage } = useChatStore();
+  const {
+    messages,
+    getMessages,
+    selectedUser,
+    subscribeToMessage,
+    unsubscribeToMessage,
+  } = useChatStore();
   const { authUser } = useAuthStore();
-  const messageEndRef = useRef(null)
+  const messageEndRef = useRef(null);
 
   const [hoveredElement, setHoveredElement] = useState({
     id: null,
     type: "",
   });
 
-  useEffect(()=>{
-    if(messageEndRef.current && messages){
+  useEffect(() => {
+    if (messageEndRef.current && messages) {
       messageEndRef.current?.scrollIntoView({
         behavior: "smooth",
-      })
+      });
     }
-  },[messages])
-  
+  }, [messages]);
+
   useEffect(() => {
     getMessages(selectedUser._id);
 
-    subscribeToMessage()
+    subscribeToMessage();
 
-    return () => unsubscribeToMessage()
+    return () => unsubscribeToMessage();
   }, [getMessages, selectedUser._id, subscribeToMessage, unsubscribeToMessage]);
 
-
   return (
-    <div  className="flex-1 flex-col flex min-h-0">
+    <div className="flex-1 flex-col flex min-h-0">
       {/* Chat Header */}
-      <ChatHeader className="flex-none"/>
+      <ChatHeader className="flex-none" />
       {/* Chat Body */}
       <div className="flex-1 p-4 space-y-4 overflow-y-auto min-h-0">
         {messages.length > 0 &&
-          messages.map((message) => (
+          messages.map((message, index) => (
             <div ref={messageEndRef}>
-              <div className="flex justify-center items-center py-4 text-xs text-base-content/80">
-                <time>{formatMessageDate(message.createdAt)}</time>
-              </div>
+              {console.log("index: ",index)}
+              {(index == 0 || 
+                exceedTenMinute(
+                  (messages[index - 1]).createdAt,
+                  message.createdAt
+                )) && (
+                  <div className="flex justify-center items-center py-4 text-xs text-base-content/80">
+                    <time>{formatMessageDate(message.createdAt)}</time>
+                  </div>
+                )}
               <div
                 key={message._id}
                 className={`chat ${
@@ -71,7 +83,7 @@ const ChatContainer = () => {
                       className={classNames({
                         "justify-end": message.senderId === authUser._id,
                         "justify-start": message.senderId !== authUser._id,
-                        "flex": true,
+                        flex: true,
                       })}
                     >
                       <div className="relative inline-block">
@@ -80,7 +92,10 @@ const ChatContainer = () => {
                           alt="message image"
                           className="sm:max-w-[200px] mb-2 rounded-md flex"
                           onMouseEnter={() =>
-                            setHoveredElement({ id: message._id, type: "image" })
+                            setHoveredElement({
+                              id: message._id,
+                              type: "image",
+                            })
                           }
                           onMouseLeave={() =>
                             setHoveredElement({ id: null, type: "" })
@@ -88,12 +103,14 @@ const ChatContainer = () => {
                         />
                         {hoveredElement.id === message._id &&
                           hoveredElement.type === "image" && (
-                            <div className={classNames({
-                              "right-full": message.senderId === authUser._id,
-                              "left-full": message.senderId != authUser._id,
-                              "absolute top-1/2 z-50":true
-                            })}>
-                              <MessageTooltip content={message.createdAt}/>
+                            <div
+                              className={classNames({
+                                "right-full": message.senderId === authUser._id,
+                                "left-full": message.senderId != authUser._id,
+                                "absolute top-1/2 z-50": true,
+                              })}
+                            >
+                              <MessageTooltip content={message.createdAt} />
                             </div>
                           )}
                       </div>
@@ -104,7 +121,7 @@ const ChatContainer = () => {
                       className={classNames({
                         "justify-end ": message.senderId === authUser._id,
                         "justify-start ": message.senderId !== authUser._id,
-                        "flex": true,
+                        flex: true,
                       })}
                     >
                       <div className="relative inline-block max-w-[80%]">
@@ -127,12 +144,14 @@ const ChatContainer = () => {
                         </p>
                         {hoveredElement.id === message._id &&
                           hoveredElement.type === "text" && (
-                            <div className={classNames({
-                              "right-full": message.senderId === authUser._id,
-                              "left-full": message.senderId != authUser._id,
-                              "absolute top-1/2 transform -translate-y-1/2 z-50":true
-                            })}>
-                              <MessageTooltip content={message.createdAt}/>
+                            <div
+                              className={classNames({
+                                "right-full": message.senderId === authUser._id,
+                                "left-full": message.senderId != authUser._id,
+                                "absolute top-1/2 transform -translate-y-1/2 z-50": true,
+                              })}
+                            >
+                              <MessageTooltip content={message.createdAt} />
                             </div>
                           )}
                       </div>

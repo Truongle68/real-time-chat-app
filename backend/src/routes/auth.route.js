@@ -14,4 +14,5 @@ router.get('/check', authenticated, checkAuthController)
 
 router.put('/update-profile/pic', authenticated, updateProfileController)
 
+
 export default router;  

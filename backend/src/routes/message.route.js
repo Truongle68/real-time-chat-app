@@ -11,3 +11,4 @@ router.get('/users', authenticated, getUsersForSidebarController)
 router.post('/send/:id', authenticated, sendMessageController)
 
 router.get('/get/:id',authenticated, getMessagesController)
+

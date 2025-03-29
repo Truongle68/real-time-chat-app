@@ -119,6 +119,8 @@ class AuthService {
 
     return updatedUser;
   }
+
+  
 }
 
 const authService = new AuthService();

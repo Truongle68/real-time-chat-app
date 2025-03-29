@@ -3,18 +3,12 @@ import messageService from "../services/message.services.js";
 
 export const getUsersForSidebarController = async (req, res) => {
   try {
-    const result = await messageService.getUsersForSidebar(req.user);
-    // if (result.error) {
-    //     return res.status(400).json({
-    //         message: Messages.PROFILE_UPDATED_FAIL,
-    //         error: result.error
-    //     })
-    // }else {
+    const result = await messageService.getUsersForSidebar(req.query, req.user);
+
     return res.status(200).json({
       message: Messages.GET_LIST_SUCCESS.replace("%s", "users"),
       data: result,
     });
-    // }
   } catch (error) {
     console.log("Error in get users for sidebar controller: ", error.message);
     return res.status(500).json({ message: Messages.INTERNAL_SERVER_ERROR });
@@ -57,3 +51,4 @@ export const getMessagesController = async (req, res) => {
     return res.status(500).json({ message: Messages.INTERNAL_SERVER_ERROR });
   }
 };
+

@@ -11,7 +11,6 @@ import { useAuthStore } from "./store/useAuthStore";
 import { useEffect } from "react";
 import { Loader } from "lucide-react";
 import { useThemeStore } from "./store/useThemeStore";
-import ErrorBoundary from "./ErrorBoudary.js"
 
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -46,7 +45,7 @@ function App() {
           element={!authUser ? <LoginPage /> : <Navigate to={"/"} />}
         />
         <Route path="/settings" element={<SettingsPage />} />
-        <Route path="/profile" element={<ErrorBoundary><ProfilePage /></ErrorBoundary>} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
 
       <Toaster />

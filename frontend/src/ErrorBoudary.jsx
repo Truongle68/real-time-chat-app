@@ -12,8 +12,17 @@ class ErrorBoundary extends Component {
   }
 
   render() {
-    return this.state.hasError
-      ? <div>Profile failed to load</div>
-      : this.props.children;
+    if (this.state.hasError) {
+      return (
+        <div className="error-boundary">
+          <h2>Something went wrong</h2>
+          <p>Profile failed to load</p>
+        </div>
+      );
+    }
+
+    return this.props.children;
   }
 }
+
+export default ErrorBoundary;
